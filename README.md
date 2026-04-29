@@ -1,6 +1,6 @@
 # 🤖 MY_robot — ROS 2 + Ignition Gazebo Simulation
 
-> A fully simulated robot built with ROS 2 (Humble) and Ignition Gazebo (Fortress), featuring a custom URDF/SDF model, PID control, and ROS-based teleoperation.
+> A fully simulated robot built with ROS 2 (Humble) and Ignition Gazebo (Fortress), featuring a SolidWorks-designed model exported to URDF/SDF, PID control, and ROS-based teleoperation.
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## Overview
 
-This project simulates a robot in Ignition Gazebo, bridged with ROS 2. It includes a custom URDF/SDF robot model, launch files for simulation and visualization, a PID-based controller, and a teleoperation node.
+This project simulates a robot in Ignition Gazebo, bridged with ROS 2. The robot was designed in **SolidWorks** and exported to URDF/SDF for simulation. It includes launch files for simulation and visualization, a PID-based controller, and a teleoperation node.
 
 ---
 
@@ -27,6 +27,8 @@ This project simulates a robot in Ignition Gazebo, bridged with ROS 2. It includ
 
 ```
 MY_robot/
+├── solidworks_files/              # Original SolidWorks CAD model (.SLDPRT / .SLDASM)
+│                                  # Used to generate the robot URDF via sw_urdf_exporter
 └── src/
     └── my_robot/
         ├── config/                    # ROS 2 parameter configs
@@ -170,7 +172,8 @@ source install/setup.bash
 ## ✨ Features
 
 - 🌍 **Ignition Gazebo simulation** — physics-based robot environment using Fortress
-- 🦾 **Custom URDF/SDF model** — fully defined robot geometry and joints
+- 🦾 **SolidWorks CAD model** — robot designed in SolidWorks and exported to URDF via `sw_urdf_exporter`
+- 📐 **Custom URDF/SDF** — simulation-ready robot model with joints, links, and inertial properties
 - 🎛️ **PID controller** — closed-loop motion control via ROS 2 node
 - 🕹️ **Teleoperation** — keyboard-based robot driving over ROS 2 topics
 - 🔗 **ROS–Ignition bridge** — bidirectional topic translation between ROS 2 and Ignition
