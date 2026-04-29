@@ -180,7 +180,3 @@ source install/setup.bash
 - 📊 **RViz2 visualization** — real-time robot state and sensor display
 
 ---
-
-## 📄 License
-
-This project is for educational/personal use. Add your preferred license here (e.g., MIT, Apache 2.0).
