@@ -1,1 +1,0 @@
-geometry_msgs;nav_msgs;std_msgs;rclpy;ros_ign_gazebo;robot_state_publisher;rviz2;joint_state_publisher_gui;launch;launch_ros

@@ -1,6 +1,0 @@
-Invoking command in '/home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/aditya4430/ROS_PROJECT/MY_robot/src/my_robot -DCMAKE_INSTALL_PREFIX=/home/aditya4430/ROS_PROJECT/MY_robot/install/my_robot
-Invoked command in '/home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/aditya4430/ROS_PROJECT/MY_robot/src/my_robot -DCMAKE_INSTALL_PREFIX=/home/aditya4430/ROS_PROJECT/MY_robot/install/my_robot
-Invoking command in '/home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot -- -j16 -l16
-Invoked command in '/home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot -- -j16 -l16
-Invoking command in '/home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot
-Invoked command in '/home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/aditya4430/ROS_PROJECT/MY_robot/build/my_robot
