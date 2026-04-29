@@ -1,0 +1,882 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="earthquake_disaster">
+
+    <!-- Physics -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <ode>
+        <solver><type>quick</type><iters>150</iters><sor>1.4</sor></solver>
+        <constraints><cfm>0.00001</cfm><erp>0.2</erp></constraints>
+      </ode>
+    </physics>
+
+    <!-- Dim lighting for dust/cloud cover -->
+   <scene>
+      <ambient>0.8 0.8 0.8 1</ambient>
+      <background>0.7 0.7 0.8 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <!-- Directional light with soft shadows -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 20 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <direction>-0.5 0.3 -1</direction>
+    </light>
+
+    <light name="fill_light" type="directional">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 15 0 0 0</pose>
+      <diffuse>0.15 0.14 0.13 1</diffuse>
+      <specular>0.0 0.0 0.0 1</specular>
+      <direction>0.5 -0.3 -0.6</direction>
+    </light>
+
+    <!-- Heightmap terrain -->
+    <model name="earthquake_terrain">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <link name="terrain_link">
+        <collision name="terrain_col">
+          <geometry>
+            <heightmap>
+              <uri>file:///home/sidharth/MY_robot/src/my_robot/world/earthquake_heightmap.png</uri>
+              <size>20 20 0.5</size>
+              <pos>0 0 0</pos>
+            </heightmap>
+          </geometry>
+          <surface>
+            <friction>
+              <ode><mu>2.0</mu><mu2>2.0</mu2></ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="terrain_vis">
+          <geometry>
+            <heightmap>
+              <uri>file:///home/sidharth/MY_robot/src/my_robot/world/earthquake_heightmap.png</uri>
+              <size>20 20 0.5</size>
+              <texture>
+                <diffuse>file:///home/sidharth/MY_robot/src/my_robot/world/dirt.png</diffuse>
+                <normal>file:///home/sidharth/MY_robot/src/my_robot/world/dirt.png</normal>
+                <size>10</size>
+              </texture>
+              <blend>
+                <min_height>0</min_height>
+                <fade_dist>5</fade_dist>
+              </blend>
+            </heightmap>
+          </geometry>
+
+          <material>
+            <ambient>0.5 0.4 0.3 1</ambient>
+            <diffuse>0.5 0.4 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Ground plane fallback -->
+    <model name="ground_plane">
+      <static>true</static>
+      <pose>0 0 -0.05 0 0 0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><plane><normal>0 0 1</normal><size>25 25</size></plane></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><plane><normal>0 0 1</normal><size>25 25</size></plane></geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Boundary walls -->
+    <model name="boundary_north">
+      <static>true</static><pose>0 10 1 0 0 0</pose>
+      <link name="link"><collision name="col"><geometry><box><size>20 0.2 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>20 0.2 2</size></box></geometry>
+          <material><ambient>0.45 0.42 0.38 1</ambient><diffuse>0.45 0.42 0.38 1</diffuse></material></visual></link>
+    </model>
+    <model name="boundary_south">
+      <static>true</static><pose>0 -10 1 0 0 0</pose>
+      <link name="link"><collision name="col"><geometry><box><size>20 0.2 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>20 0.2 2</size></box></geometry>
+          <material><ambient>0.45 0.42 0.38 1</ambient><diffuse>0.45 0.42 0.38 1</diffuse></material></visual></link>
+    </model>
+    <model name="boundary_east">
+      <static>true</static><pose>10 0 1 0 0 1.5708</pose>
+      <link name="link"><collision name="col"><geometry><box><size>20 0.2 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>20 0.2 2</size></box></geometry>
+          <material><ambient>0.45 0.42 0.38 1</ambient><diffuse>0.45 0.42 0.38 1</diffuse></material></visual></link>
+    </model>
+    <model name="boundary_west">
+      <static>true</static><pose>-10 0 1 0 0 1.5708</pose>
+      <link name="link"><collision name="col"><geometry><box><size>20 0.2 2</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>20 0.2 2</size></box></geometry>
+          <material><ambient>0.45 0.42 0.38 1</ambient><diffuse>0.45 0.42 0.38 1</diffuse></material></visual></link>
+    </model>
+
+    <!-- ============ DEBRIS, OBSTACLES, AND VICTIMS ============ -->
+    <model name="slab_1">
+      <static>true</static>
+      <pose>-3.0 2.0 0.2820 0.0 0.0 0.3</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>2.0 1.5 0.15</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>2.0 1.5 0.15</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_2">
+      <static>true</static>
+      <pose>4.0 -3.0 0.3722 0.1 0.0 -0.5</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.8 1.0 0.12</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.8 1.0 0.12</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_3">
+      <static>true</static>
+      <pose>-6.0 -5.0 0.3153 0.15 0.1 0.8</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>2.5 1.2 0.2</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>2.5 1.2 0.2</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_4">
+      <static>true</static>
+      <pose>2.0 6.0 0.2761 0.0 0.0 1.2</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.5 1.5 0.1</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.5 1.5 0.1</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_5">
+      <static>true</static>
+      <pose>7.0 3.0 0.3016 0.3 0.0 0.0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>3.0 1.0 0.18</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>3.0 1.0 0.18</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_6">
+      <static>true</static>
+      <pose>-1.0 -7.0 0.0800 0.0 0.2 -0.7</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.2 0.8 0.1</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.2 0.8 0.1</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_tilted_1">
+      <static>true</static>
+      <pose>5.0 7.0 0.2663 0.4 0.15 0.5</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>2.0 1.5 0.15</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>2.0 1.5 0.15</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="slab_tilted_2">
+      <static>true</static>
+      <pose>-7.0 4.0 0.0800 -0.3 0.2 1.0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.8 1.2 0.12</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.8 1.2 0.12</size></box></geometry>
+          <material><ambient>0.55 0.53 0.5 1</ambient><diffuse>0.55 0.53 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_broken_1">
+      <static>true</static>
+      <pose>-5.0 0.0 0.7373 0.0 0.15 0.1</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>3.0 0.25 2.0</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>3.0 0.25 2.0</size></box></geometry>
+          <material><ambient>0.6 0.58 0.55 1</ambient><diffuse>0.6 0.58 0.55 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_broken_2">
+      <static>true</static>
+      <pose>3.0 5.0 0.7000 0.0 -0.1 0.7</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>2.5 0.2 1.6</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>2.5 0.2 1.6</size></box></geometry>
+          <material><ambient>0.6 0.58 0.55 1</ambient><diffuse>0.6 0.58 0.55 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_broken_3">
+      <static>true</static>
+      <pose>6.0 -6.0 0.8922 0.0 0.25 -0.3</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>2.0 0.25 2.4</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>2.0 0.25 2.4</size></box></geometry>
+          <material><ambient>0.6 0.58 0.55 1</ambient><diffuse>0.6 0.58 0.55 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_fragment_1">
+      <static>true</static>
+      <pose>-4.0 -3.0 0.3118 0.3 0.0 0.5</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.2 0.2 1.0</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.2 0.2 1.0</size></box></geometry>
+          <material><ambient>0.6 0.58 0.55 1</ambient><diffuse>0.6 0.58 0.55 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_fragment_2">
+      <static>true</static>
+      <pose>8.0 1.0 0.5765 -0.2 0.1 1.5</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.0 0.2 0.8</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.0 0.2 0.8</size></box></geometry>
+          <material><ambient>0.6 0.58 0.55 1</ambient><diffuse>0.6 0.58 0.55 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_0_0">
+      <static>true</static>
+      <pose>1.727004496779491 -6.92663868873384 0.3598 -0.2821216683371578 -0.16881721511783798 1.586815604644558</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.23533989748458226 0.19645598837104025 0.1673174676379111</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.23533989748458226 0.19645598837104025 0.1673174676379111</size></box></geometry>
+          <material><ambient>0.5284359135409691 0.4784359135409691 0.4284359135409691 1</ambient><diffuse>0.5284359135409691 0.4784359135409691 0.4284359135409691 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_0_1">
+      <static>true</static>
+      <pose>1.4785111480942355 -6.951011776196014 0.3500 -0.2961007441931634 0.18349155109968474 2.1921577002630324</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.20898829612064335 0.2164504893907514 0.18907489404494826</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.20898829612064335 0.2164504893907514 0.18907489404494826</size></box></geometry>
+          <material><ambient>0.39408812440813934 0.34408812440813935 0.29408812440813936 1</ambient><diffuse>0.39408812440813934 0.34408812440813935 0.29408812440813936 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_0_2">
+      <static>true</static>
+      <pose>1.7922256949283637 -6.994369927070881 0.3618 0.06223561882013462 0.18427696396462812 2.2913578102185883</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.16731890902252536 0.14032811868057493 0.15456037090125938</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.16731890902252536 0.14032811868057493 0.15456037090125938</size></box></geometry>
+          <material><ambient>0.36854916867602955 0.31854916867602956 0.2685491686760295 1</ambient><diffuse>0.36854916867602955 0.31854916867602956 0.2685491686760295 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_0_3">
+      <static>true</static>
+      <pose>1.9882032698650725 -6.176733662903293 0.3598 0.046411287154057235 0.12274310172895408 0.14388856467877936</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.2104081262546454 0.22038313386229563 0.1958591302648673</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.2104081262546454 0.22038313386229563 0.1958591302648673</size></box></geometry>
+          <material><ambient>0.515880932850599 0.465880932850599 0.415880932850599 1</ambient><diffuse>0.515880932850599 0.465880932850599 0.415880932850599 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_0_4">
+      <static>true</static>
+      <pose>1.6798734540619187 -6.860461463280556 0.3598 -0.08110069261794944 -0.0778914197298704 0.6578520766224714</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.14655817727220605 0.13354226365840594 0.1198614653719459</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.14655817727220605 0.13354226365840594 0.1198614653719459</size></box></geometry>
+          <material><ambient>0.3702002858819458 0.3202002858819458 0.2702002858819458 1</ambient><diffuse>0.3702002858819458 0.3202002858819458 0.2702002858819458 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_1_0">
+      <static>true</static>
+      <pose>-3.11427510606582 6.222295233641905 0.2108 0.08399985591245573 0.03416984626478775 2.1496887481082063</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.24582535959006982 0.23397219583944887 0.24453764654154078</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.24582535959006982 0.23397219583944887 0.24453764654154078</size></box></geometry>
+          <material><ambient>0.3826804987523857 0.3326804987523857 0.28268049875238566 1</ambient><diffuse>0.3826804987523857 0.3326804987523857 0.28268049875238566 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_1_1">
+      <static>true</static>
+      <pose>-2.9194585711226035 6.389164139521162 0.2127 0.26574582860103263 0.22582057588360133 0.9880885457072207</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.10642004878080756 0.09653323785742622 0.06443642664358896</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.10642004878080756 0.09653323785742622 0.06443642664358896</size></box></geometry>
+          <material><ambient>0.4130906096118164 0.3630906096118164 0.31309060961181634 1</ambient><diffuse>0.4130906096118164 0.3630906096118164 0.31309060961181634 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_1_2">
+      <static>true</static>
+      <pose>-3.1068718260175334 6.008796129035581 0.2167 -0.14235503488623882 0.050751594134124334 2.819163854511778</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.19177037051747975 0.17233463582609493 0.14971207280132673</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.19177037051747975 0.17233463582609493 0.14971207280132673</size></box></geometry>
+          <material><ambient>0.4029760332996105 0.3529760332996105 0.30297603329961054 1</ambient><diffuse>0.4029760332996105 0.3529760332996105 0.30297603329961054 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_1_3">
+      <static>true</static>
+      <pose>-3.362909986172016 5.8324849871322 0.2167 0.076467625021854 0.17524761861777843 1.325582295751008</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.20190525873529291 0.16532942457655442 0.11202199738442131</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.20190525873529291 0.16532942457655442 0.11202199738442131</size></box></geometry>
+          <material><ambient>0.36818188243475874 0.31818188243475876 0.2681818824347587 1</ambient><diffuse>0.36818188243475874 0.31818188243475876 0.2681818824347587 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_1_4">
+      <static>true</static>
+      <pose>-3.698782785160456 5.994783514481453 0.2049 0.13243309161611677 0.10902622141594487 1.6860868374836169</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.20582286901982738 0.23552555437903677 0.10409296294768905</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.20582286901982738 0.23552555437903677 0.10409296294768905</size></box></geometry>
+          <material><ambient>0.5442156755227237 0.49421567552272366 0.4442156755227237 1</ambient><diffuse>0.5442156755227237 0.49421567552272366 0.4442156755227237 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_2_0">
+      <static>true</static>
+      <pose>-3.652895167068525 1.9082304307864173 0.2716 -0.19280887168192118 0.24757670360689227 2.733428309287448</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.290763185504216 0.2632440841727003 0.21815759917694713</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.290763185504216 0.2632440841727003 0.21815759917694713</size></box></geometry>
+          <material><ambient>0.5251705880756389 0.4751705880756389 0.4251705880756389 1</ambient><diffuse>0.5251705880756389 0.4751705880756389 0.4251705880756389 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_2_1">
+      <static>true</static>
+      <pose>-3.4660025492157684 2.1124146749833175 0.2618 0.01821220331710649 -0.2996568623232339 1.0178500189946735</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.13056785370992696 0.1326245078874862 0.11611572093321863</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.13056785370992696 0.1326245078874862 0.11611572093321863</size></box></geometry>
+          <material><ambient>0.5025021600150303 0.45250216001503035 0.40250216001503036 1</ambient><diffuse>0.5025021600150303 0.45250216001503035 0.40250216001503036 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_2_2">
+      <static>true</static>
+      <pose>-3.744970598278569 2.402563796381929 0.2676 0.2681696671787965 -0.24860792875927273 1.5260100548141673</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.2663331058722359 0.21923744049801408 0.25008806470694256</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.2663331058722359 0.21923744049801408 0.25008806470694256</size></box></geometry>
+          <material><ambient>0.41150282508053226 0.3615028250805323 0.3115028250805323 1</ambient><diffuse>0.41150282508053226 0.3615028250805323 0.3115028250805323 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_2_3">
+      <static>true</static>
+      <pose>-3.6952348221960176 2.2340673453745437 0.2676 0.2234598246511545 -0.046117235879467866 0.6650463650881376</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.12567829289995255 0.12818198514424364 0.07949507877347767</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.12567829289995255 0.12818198514424364 0.07949507877347767</size></box></geometry>
+          <material><ambient>0.44505647561974626 0.3950564756197463 0.3450564756197463 1</ambient><diffuse>0.44505647561974626 0.3950564756197463 0.3450564756197463 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_2_4">
+      <static>true</static>
+      <pose>-3.225151251884943 2.2033962492072883 0.2559 0.010545504621354396 -0.22739748247904057 0.7055496382790901</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.16234325826017898 0.17207593514773728 0.1167329266634587</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.16234325826017898 0.17207593514773728 0.1167329266634587</size></box></geometry>
+          <material><ambient>0.549029871332179 0.49902987133217896 0.449029871332179 1</ambient><diffuse>0.549029871332179 0.49902987133217896 0.449029871332179 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_3_0">
+      <static>true</static>
+      <pose>-2.536687397339048 0.9565394428528268 0.2559 -0.25748559006680793 -0.15719721937860287 2.100590223850321</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.22622059145401976 0.2629063335058368 0.21034391006711767</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.22622059145401976 0.2629063335058368 0.21034391006711767</size></box></geometry>
+          <material><ambient>0.3957883567622309 0.3457883567622309 0.2957883567622309 1</ambient><diffuse>0.3957883567622309 0.3457883567622309 0.2957883567622309 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_3_1">
+      <static>true</static>
+      <pose>-2.5525653225651865 0.8686339071262923 0.2559 -0.18575405138287338 -0.241841511462706 1.3535007127560255</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.2142086186650569 0.2385957921540833 0.19359071756641505</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.2142086186650569 0.2385957921540833 0.19359071756641505</size></box></geometry>
+          <material><ambient>0.4445342052623588 0.39453420526235883 0.3445342052623588 1</ambient><diffuse>0.4445342052623588 0.39453420526235883 0.3445342052623588 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_3_2">
+      <static>true</static>
+      <pose>-2.343223506915704 1.2033467264379423 0.2539 -0.09641843676302211 0.21700352181167465 0.780780888509697</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.2346729094586603 0.19697673083331135 0.16457860856978787</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.2346729094586603 0.19697673083331135 0.16457860856978787</size></box></geometry>
+          <material><ambient>0.5468330422731933 0.4968330422731933 0.4468330422731933 1</ambient><diffuse>0.5468330422731933 0.4968330422731933 0.4468330422731933 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_3_3">
+      <static>true</static>
+      <pose>-2.5765932214948135 1.1849356062343992 0.2520 0.2168094628570983 0.030195187469908846 0.15884735470812708</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.1557090289333881 0.1820715391110587 0.11235424346809532</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.1557090289333881 0.1820715391110587 0.11235424346809532</size></box></geometry>
+          <material><ambient>0.3999612895764201 0.3499612895764201 0.2999612895764201 1</ambient><diffuse>0.3999612895764201 0.3499612895764201 0.2999612895764201 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rubble_3_4">
+      <static>true</static>
+      <pose>-1.7675196615228985 1.5723496434812192 0.2559 -0.171751620480491 -0.05937582447032844 0.18411515591264183</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.28527339660162554 0.2471963714471273 0.21190694499419407</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.28527339660162554 0.2471963714471273 0.21190694499419407</size></box></geometry>
+          <material><ambient>0.5197391468828612 0.46973914688286117 0.4197391468828612 1</ambient><diffuse>0.5197391468828612 0.46973914688286117 0.4197391468828612 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="rock_0">
+      <static>true</static>
+      <pose>-1.9364300963693424 7.764941500475615 0.3594 0.22750418366957165 0.21150374299508146 3.005977392299374</pose>
+      <link name="link">
+        <collision name="col"><geometry><sphere><radius>0.3060812232688608</radius></sphere></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface></collision>
+        <visual name="vis"><geometry><sphere><radius>0.3060812232688608</radius></sphere></geometry>
+          <material><ambient>0.45681412038971386 0.43681412038971384 0.4068141203897139 1</ambient><diffuse>0.45681412038971386 0.43681412038971384 0.4068141203897139 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rock_1">
+      <static>true</static>
+      <pose>7.9267630318834215 0.8922931744898914 0.6176 0.1483539127472821 0.4843546824845794 1.8186261131630446</pose>
+      <link name="link">
+        <collision name="col"><geometry><sphere><radius>0.4873633101185304</radius></sphere></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface></collision>
+        <visual name="vis"><geometry><sphere><radius>0.4873633101185304</radius></sphere></geometry>
+          <material><ambient>0.3309593650548128 0.3109593650548128 0.28095936505481284 1</ambient><diffuse>0.3309593650548128 0.3109593650548128 0.28095936505481284 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rock_2">
+      <static>true</static>
+      <pose>0.6751232219883878 3.9676089660650256 0.3286 0.2514251914597568 0.4263599460241427 0.4943387657299775</pose>
+      <link name="link">
+        <collision name="col"><geometry><sphere><radius>0.22286610916299324</radius></sphere></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface></collision>
+        <visual name="vis"><geometry><sphere><radius>0.22286610916299324</radius></sphere></geometry>
+          <material><ambient>0.41683551889179427 0.39683551889179425 0.3668355188917943 1</ambient><diffuse>0.41683551889179427 0.39683551889179425 0.3668355188917943 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rock_3">
+      <static>true</static>
+      <pose>7.372462452391206 -6.71821655615061 0.5744 0.3376062768020451 0.1176019475004656 0.37644396779397</pose>
+      <link name="link">
+        <collision name="col"><geometry><sphere><radius>0.2743299843922893</radius></sphere></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface></collision>
+        <visual name="vis"><geometry><sphere><radius>0.2743299843922893</radius></sphere></geometry>
+          <material><ambient>0.41900702129000555 0.39900702129000554 0.36900702129000557 1</ambient><diffuse>0.41900702129000555 0.39900702129000554 0.36900702129000557 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rock_4">
+      <static>true</static>
+      <pose>6.244597026071 -4.060554435382002 0.6633 0.20961245766793624 0.29183614464561236 1.641537726770351</pose>
+      <link name="link">
+        <collision name="col"><geometry><sphere><radius>0.43780766141337646</radius></sphere></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface></collision>
+        <visual name="vis"><geometry><sphere><radius>0.43780766141337646</radius></sphere></geometry>
+          <material><ambient>0.42387630206642063 0.4038763020664206 0.37387630206642064 1</ambient><diffuse>0.42387630206642063 0.4038763020664206 0.37387630206642064 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="rock_5">
+      <static>true</static>
+      <pose>6.955300123782836 -4.731852809223417 0.7072 0.19789292339562725 0.33584511147998564 0.9419908305681134</pose>
+      <link name="link">
+        <collision name="col"><geometry><sphere><radius>0.4864767203157659</radius></sphere></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface></collision>
+        <visual name="vis"><geometry><sphere><radius>0.4864767203157659</radius></sphere></geometry>
+          <material><ambient>0.3477371905231692 0.3277371905231692 0.2977371905231692 1</ambient><diffuse>0.3477371905231692 0.3277371905231692 0.2977371905231692 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="beam_1">
+      <static>true</static>
+      <pose>-2.0 4.0 0.0933 0.0 1.57 0.2</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><cylinder><radius>0.05</radius><length>3.0</length></cylinder></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.05</radius><length>3.0</length></cylinder></geometry>
+          <material><ambient>0.45 0.42 0.4 1</ambient><diffuse>0.45 0.42 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="beam_2">
+      <static>true</static>
+      <pose>6.0 0.0 0.2855 0.5 1.57 -0.4</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><cylinder><radius>0.04</radius><length>2.5</length></cylinder></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.04</radius><length>2.5</length></cylinder></geometry>
+          <material><ambient>0.45 0.42 0.4 1</ambient><diffuse>0.45 0.42 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="beam_3">
+      <static>true</static>
+      <pose>-6.0 -7.0 0.2835 0.1 1.3 0.8</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><cylinder><radius>0.06</radius><length>2.0</length></cylinder></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.06</radius><length>2.0</length></cylinder></geometry>
+          <material><ambient>0.45 0.42 0.4 1</ambient><diffuse>0.45 0.42 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="beam_4">
+      <static>true</static>
+      <pose>1.0 -5.0 0.2953 -0.3 1.57 0.0</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><cylinder><radius>0.04</radius><length>1.8</length></cylinder></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><cylinder><radius>0.04</radius><length>1.8</length></cylinder></geometry>
+          <material><ambient>0.45 0.42 0.4 1</ambient><diffuse>0.45 0.42 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="dynamic_debris_0">
+      <static>false</static>
+      <pose>-2.2058736447377516 3.022373908972826 0.2618 0.22914276130929306 0.4992272204272212 3.1277428462649968</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.08870517373917888 0.10644620848701465 0.07096413899134311</size></box></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.08870517373917888 0.10644620848701465 0.07096413899134311</size></box></geometry>
+          <material><ambient>0.5 0.45 0.4 1</ambient><diffuse>0.5 0.45 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="dynamic_debris_1">
+      <static>false</static>
+      <pose>-5.120871346804404 -3.442148252795515 0.2441 0.46662968899685453 0.44043208684321977 2.7609085614014646</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.11182404977004817 0.1341888597240578 0.08945923981603854</size></box></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.11182404977004817 0.1341888597240578 0.08945923981603854</size></box></geometry>
+          <material><ambient>0.5 0.45 0.4 1</ambient><diffuse>0.5 0.45 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="dynamic_debris_2">
+      <static>false</static>
+      <pose>-1.5656749351333925 -4.107038011713216 0.2657 0.3517699625436855 0.30583888286297506 3.099911819802924</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.18004939455677685 0.21605927346813222 0.14403951564542147</size></box></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.18004939455677685 0.21605927346813222 0.14403951564542147</size></box></geometry>
+          <material><ambient>0.5 0.45 0.4 1</ambient><diffuse>0.5 0.45 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="dynamic_debris_3">
+      <static>false</static>
+      <pose>1.8477158125287918 -5.906122714174105 0.3500 0.14968937609998895 0.33169435748303866 2.9482402123311062</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.1780524962138554 0.21366299545662648 0.14244199697108434</size></box></geometry>
+          <surface><friction><ode><mu>1.5</mu><mu2>1.5</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>0.1780524962138554 0.21366299545662648 0.14244199697108434</size></box></geometry>
+          <material><ambient>0.5 0.45 0.4 1</ambient><diffuse>0.5 0.45 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="victim_1">
+      <static>true</static>
+      <pose>-4.5 0.8 0.3755 1.57 0.0 0.3</pose>
+      <link name="torso">
+        <collision name="col"><geometry><box><size>0.4 0.25 0.6</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.4 0.25 0.6</size></box></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="head">
+        <pose>0.3 0 0.05 0 0 0</pose>
+        <collision name="col"><geometry><sphere><radius>0.1</radius></sphere></geometry></collision>
+        <visual name="vis"><geometry><sphere><radius>0.1</radius></sphere></geometry>
+          <material><ambient>0.85 0.65 0.55 1</ambient><diffuse>0.85 0.65 0.55 1</diffuse></material></visual>
+      </link>
+      <link name="left_leg">
+        <pose>-0.3 0.08 0 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.5 0.12 0.12</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.12 0.12</size></box></geometry>
+          <material><ambient>0.3 0.3 0.5 1</ambient><diffuse>0.3 0.3 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="right_leg">
+        <pose>-0.3 -0.08 0 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.5 0.12 0.12</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.12 0.12</size></box></geometry>
+          <material><ambient>0.3 0.3 0.5 1</ambient><diffuse>0.3 0.3 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="left_arm">
+        <pose>0.05 0.2 0 0 0 0.3</pose>
+        <collision name="col"><geometry><box><size>0.4 0.08 0.08</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.4 0.08 0.08</size></box></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="right_arm">
+        <pose>0.05 -0.2 0 0 0 -0.3</pose>
+        <collision name="col"><geometry><box><size>0.4 0.08 0.08</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.4 0.08 0.08</size></box></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material></visual>
+      </link>
+      <joint name="head_j" type="fixed"><parent>torso</parent><child>head</child></joint>
+      <joint name="ll_j" type="fixed"><parent>torso</parent><child>left_leg</child></joint>
+      <joint name="rl_j" type="fixed"><parent>torso</parent><child>right_leg</child></joint>
+      <joint name="la_j" type="fixed"><parent>torso</parent><child>left_arm</child></joint>
+      <joint name="ra_j" type="fixed"><parent>torso</parent><child>right_arm</child></joint>
+    </model>
+    <model name="cover_slab_1">
+      <static>true</static>
+      <pose>-4.3 0.6 0.5735 0.05 0.0 0.3</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.2 0.8 0.1</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.2 0.8 0.1</size></box></geometry>
+          <material><ambient>0.5 0.48 0.45 1</ambient><diffuse>0.5 0.48 0.45 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="victim_2">
+      <static>true</static>
+      <pose>5.5 -5.5 0.5324 1.57 0.0 -0.5</pose>
+      <link name="torso">
+        <collision name="col"><geometry><box><size>0.4 0.25 0.6</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.4 0.25 0.6</size></box></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="head">
+        <pose>0.3 0 0.05 0 0 0</pose>
+        <collision name="col"><geometry><sphere><radius>0.1</radius></sphere></geometry></collision>
+        <visual name="vis"><geometry><sphere><radius>0.1</radius></sphere></geometry>
+          <material><ambient>0.85 0.65 0.55 1</ambient><diffuse>0.85 0.65 0.55 1</diffuse></material></visual>
+      </link>
+      <link name="left_leg">
+        <pose>-0.3 0.08 0 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.5 0.12 0.12</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.12 0.12</size></box></geometry>
+          <material><ambient>0.3 0.3 0.5 1</ambient><diffuse>0.3 0.3 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="right_leg">
+        <pose>-0.3 -0.08 0 0 0 0</pose>
+        <collision name="col"><geometry><box><size>0.5 0.12 0.12</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.5 0.12 0.12</size></box></geometry>
+          <material><ambient>0.3 0.3 0.5 1</ambient><diffuse>0.3 0.3 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="left_arm">
+        <pose>0.05 0.2 0 0 0 0.3</pose>
+        <collision name="col"><geometry><box><size>0.4 0.08 0.08</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.4 0.08 0.08</size></box></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material></visual>
+      </link>
+      <link name="right_arm">
+        <pose>0.05 -0.2 0 0 0 -0.3</pose>
+        <collision name="col"><geometry><box><size>0.4 0.08 0.08</size></box></geometry></collision>
+        <visual name="vis"><geometry><box><size>0.4 0.08 0.08</size></box></geometry>
+          <material><ambient>0.8 0.6 0.5 1</ambient><diffuse>0.8 0.6 0.5 1</diffuse></material></visual>
+      </link>
+      <joint name="head_j" type="fixed"><parent>torso</parent><child>head</child></joint>
+      <joint name="ll_j" type="fixed"><parent>torso</parent><child>left_leg</child></joint>
+      <joint name="rl_j" type="fixed"><parent>torso</parent><child>right_leg</child></joint>
+      <joint name="la_j" type="fixed"><parent>torso</parent><child>left_arm</child></joint>
+      <joint name="ra_j" type="fixed"><parent>torso</parent><child>right_arm</child></joint>
+    </model>
+    <model name="cover_slab_2">
+      <static>true</static>
+      <pose>5.8 -5.3 0.7304 0.1 0.05 -0.3</pose>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>1.5 1.0 0.12</size></box></geometry>
+          <surface><friction><ode><mu>2.0</mu><mu2>2.0</mu2></ode></friction></surface>
+        </collision>
+        <visual name="vis">
+          <geometry><box><size>1.5 1.0 0.12</size></box></geometry>
+          <material><ambient>0.52 0.5 0.47 1</ambient><diffuse>0.52 0.5 0.47 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

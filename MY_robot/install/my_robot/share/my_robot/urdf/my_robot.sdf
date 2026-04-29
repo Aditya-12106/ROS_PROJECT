@@ -1,0 +1,588 @@
+<sdf version='1.9'>
+  <model name='my_robot'>
+    <link name='base_footprint'>
+      <inertial>
+        <pose>0 0 0.03 0 0 0</pose>
+        <mass>7.6799999999999997</mass>
+        <inertia>
+          <ixx>0.043263999999999997</ixx>
+          <ixy>-2.7663000000000001e-18</ixy>
+          <ixz>-5.8775e-36</ixz>
+          <iyy>0.071936</iyy>
+          <iyz>-7.9529999999999996e-35</iyz>
+          <izz>0.1024</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_footprint_fixed_joint_lump__base_link_collision'>
+        <pose>0 0 0.05 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.8</mu>
+              <mu2>0.8</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='base_footprint_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_footprint_fixed_joint_lump__base_link_visual_1'>
+        <pose>0 0 0.05 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/base_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.85 0.35 0.05 1</diffuse>
+          <ambient>0.85 0.35 0.05 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='flsjoint' type='prismatic'>
+      <pose relative_to='base_footprint'>0.12 0.13 0.06822 0 0 0</pose>
+      <parent>base_footprint</parent>
+      <child>f_l_s</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.04</upper>
+          <effort>50</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>80</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>4000</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='f_l_s'>
+      <pose relative_to='flsjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-5.5511e-17 0.00055205 -0.020526 0 0 0</pose>
+        <mass>0.29999999999999999</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>-8.6579000000000002e-23</ixy>
+          <ixz>1.0006e-22</ixz>
+          <iyy>0.001</iyy>
+          <iyz>1.7666e-07</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <collision name='f_l_s_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_l_s.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='f_l_s_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_l_s.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+          <ambient>0.4 0.4 0.4 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='flwjoint' type='revolute'>
+      <pose relative_to='f_l_s'>0 0.057 -0.04 0 0 0</pose>
+      <parent>f_l_s</parent>
+      <child>f_l_w</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>15</effort>
+          <velocity>8</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <damping>1.0</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='f_l_w'>
+      <pose relative_to='flwjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.022493 0 0 0 0</pose>
+        <mass>0.69233</mass>
+        <inertia>
+          <ixx>0.00096540999999999999</ixx>
+          <ixy>-2.1293000000000001e-23</ixy>
+          <ixz>-2.5388e-20</ixz>
+          <iyy>0.0016972000000000001</iyy>
+          <iyz>1.0189e-20</iyz>
+          <izz>0.00096540999999999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='f_l_w_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_l_w.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.6</mu>
+              <mu2>1.6</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+
+      </collision>
+      <visual name='f_l_w_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_l_w.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='frsjoint' type='prismatic'>
+      <pose relative_to='base_footprint'>0.12 -0.13 0.06822 0 0 0</pose>
+      <parent>base_footprint</parent>
+      <child>f_r_s</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.04</upper>
+          <effort>50</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>80</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>4000</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='f_r_s'>
+      <pose relative_to='frsjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.00055205 -0.020526 0 0 0</pose>
+        <mass>0.29999999999999999</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>-5.3065000000000001e-23</ixy>
+          <ixz>-2.5662000000000001e-22</ixz>
+          <iyy>0.001</iyy>
+          <iyz>-1.7666e-07</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <collision name='f_r_s_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_r_s.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='f_r_s_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_r_s.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+          <ambient>0.4 0.4 0.4 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='frwjoint' type='revolute'>
+      <pose relative_to='f_r_s'>0 -0.057 -0.04 0 0 0</pose>
+      <parent>f_r_s</parent>
+      <child>f_r_w</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>15</effort>
+          <velocity>8</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <damping>1.0</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='f_r_w'>
+      <pose relative_to='frwjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0.022493 0 0 0 0</pose>
+        <mass>0.69233</mass>
+        <inertia>
+          <ixx>0.00096540999999999999</ixx>
+          <ixy>-1.0007000000000001e-20</ixy>
+          <ixz>7.9276000000000001e-20</ixz>
+          <iyy>0.0016972000000000001</iyy>
+          <iyz>-2.0112999999999999e-20</iyz>
+          <izz>0.00096540999999999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='f_r_w_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_r_w.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.6</mu>
+              <mu2>1.6</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='f_r_w_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/f_r_w.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='rlsjoint' type='prismatic'>
+      <pose relative_to='base_footprint'>-0.12 0.13 0.06822 0 0 0</pose>
+      <parent>base_footprint</parent>
+      <child>r_l_s</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.04</upper>
+          <effort>50</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>80</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>4000</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='r_l_s'>
+      <pose relative_to='rlsjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-1.3878e-17 0.00055205 -0.020526 0 0 0</pose>
+        <mass>0.29999999999999999</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>-3.3571000000000002e-23</ixy>
+          <ixz>-1.0437999999999999e-23</ixz>
+          <iyy>0.001</iyy>
+          <iyz>1.7666e-07</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <collision name='r_l_s_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_l_s.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='r_l_s_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_l_s.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+          <ambient>0.4 0.4 0.4 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='rlwjoint' type='revolute'>
+      <pose relative_to='r_l_s'>0 0.057 -0.04 0 0 0</pose>
+      <parent>r_l_s</parent>
+      <child>r_l_w</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>15</effort>
+          <velocity>8</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <damping>1.0</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='r_l_w'>
+      <pose relative_to='rlwjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-1.3878e-17 -0.022493 0 0 0 0</pose>
+        <mass>0.69233</mass>
+        <inertia>
+          <ixx>0.00096540999999999999</ixx>
+          <ixy>4.0419999999999997e-20</ixy>
+          <ixz>1.5483e-20</ixz>
+          <iyy>0.0016972000000000001</iyy>
+          <iyz>1.4413e-23</iyz>
+          <izz>0.00096540999999999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='r_l_w_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_l_w.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.6</mu>
+              <mu2>1.6</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='r_l_w_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_l_w.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='rrsjoint' type='prismatic'>
+      <pose relative_to='base_footprint'>-0.12 -0.13 0.06822 0 0 0</pose>
+      <parent>base_footprint</parent>
+      <child>r_r_s</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.04</upper>
+          <effort>50</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>80</damping>
+          <friction>0</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>4000</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='r_r_s'>
+      <pose relative_to='rrsjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 -0.00055205 -0.020526 0 0 0</pose>
+        <mass>0.29999999999999999</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>-6.2652000000000003e-24</ixy>
+          <ixz>-3.0969000000000002e-22</ixz>
+          <iyy>0.001</iyy>
+          <iyz>-1.7666e-07</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <collision name='r_r_s_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_r_s.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='r_r_s_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_r_s.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.6 0.6 0.6 1</diffuse>
+          <ambient>0.4 0.4 0.4 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='rrwjoint' type='revolute'>
+      <pose relative_to='r_r_s'>0 -0.057 -0.04 0 0 0</pose>
+      <parent>r_r_s</parent>
+      <child>r_r_w</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>15</effort>
+          <velocity>8</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <damping>1.0</damping>
+          <friction>0.2</friction>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='r_r_w'>
+      <pose relative_to='rrwjoint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>1.3878e-17 0.022493 0 0 0 0</pose>
+        <mass>0.69233</mass>
+        <inertia>
+          <ixx>0.00096540999999999999</ixx>
+          <ixy>-4.5973e-23</ixy>
+          <ixz>-3.6424e-20</ixz>
+          <iyy>0.0016972000000000001</iyy>
+          <iyz>5.0774999999999997e-21</iyz>
+          <izz>0.00096540999999999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='r_r_w_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_r_w.STL</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.6</mu>
+              <mu2>1.6</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='r_r_w_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://my_robot/meshes/r_r_w.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.05 0.05 0.05 1</diffuse>
+          <ambient>0.05 0.05 0.05 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <frame name='base_footprint_joint' attached_to='base_footprint'>
+      <pose>0 0 0.05 0 -0 0</pose>
+    </frame>
+    <frame name='base_link' attached_to='base_footprint_joint'/>
+
+    <plugin
+      filename="libgz-sim-diff-drive-system.so"
+      name="gz::sim::systems::DiffDrive">
+
+      <left_joint>flwjoint</left_joint>
+      <left_joint>rlwjoint</left_joint>
+
+      <right_joint>frwjoint</right_joint>
+      <right_joint>rrwjoint</right_joint>
+
+      <wheel_separation>0.26</wheel_separation>
+      <wheel_radius>0.04</wheel_radius>
+
+      <odom_topic>odom</odom_topic>
+      <tf_topic>tf</tf_topic>
+      <frame_id>base_footprint</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+      <max_linear_acceleration>2.0</max_linear_acceleration>
+      <max_angular_acceleration>3.0</max_angular_acceleration>
+      <update_rate>200</update_rate>
+      <topic>/cmd_vel</topic>
+
+    </plugin>
+  </model>
+</sdf>
