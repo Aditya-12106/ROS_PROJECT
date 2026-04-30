@@ -40,7 +40,7 @@ MY_robot/
         ├── meshes/                    # 3D mesh assets
         ├── scripts/
         │   ├── pid_controller.py      # PID-based motion controller
-        │   └── teleop_controller.py   # Keyboard teleoperation node
+        │   └── teleop_controller.py   # Keyboard-based control that leverages the PID controller for smooth driving
         ├── urdf/                      # Robot URDF/SDF model
         └── world/                     # Gazebo world files
 ```
@@ -98,10 +98,21 @@ sudo apt install python3-colcon-common-extensions
 
 ## 🛠️ Build
 
-Navigate to the workspace root and build with colcon:
+After downloading or cloning the repository, navigate to the workspace root.
 
+### If you used ZIP download:
 ```bash
-cd ~/ROS_PROJECT/MY_robot
+cd ROS_PROJECT-main/MY_robot
+```
+
+If you used git clone:
+```
+git clone https://github.com/Aditya-12106/ROS_PROJECT.git
+cd ROS_PROJECT/MY_robot
+```
+
+Then build with colcon:
+```
 colcon build
 ```
 
@@ -111,7 +122,7 @@ Then source the workspace overlay:
 source install/setup.bash
 ```
 
-> **Tip:** Add `source ~/ROS_PROJECT/MY_robot/install/setup.bash` to your `~/.bashrc` to auto-source on every terminal session.
+> **Tip:** Add `source ~/<your_workspace>/MY_robot/install/setup.bash` to your `~/.bashrc` to auto-source on every terminal session.
 
 ---
 
