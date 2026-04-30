@@ -1,0 +1,10 @@
+# ROS / colcon / catkin build outputs
+build/
+install/
+log/
+
+# Optional but recommended
+devel/        # for catkin workspaces
+
+# Windows ADS metadata (Zone.Identifier)
+*Zone.Identifier*
